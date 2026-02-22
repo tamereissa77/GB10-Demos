@@ -1,0 +1,124 @@
+/*
+# SPDX-FileCopyrightText: Copyright (c) 1993-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Dell Brand Colors - Light Mode */
+  --background: #FFFFFF;
+  --foreground: #333333;
+  --primary: #0076CE;           /* Dell Blue */
+  --primary-dark: #005A9E;      /* Dell Blue Dark */
+  --primary-light: #4DA6FF;     /* Dell Blue Light */
+  --secondary: #F5F5F5;         /* Dell Light Gray */
+  --accent: #FF8300;            /* Dell Orange */
+  --success: #00A982;           /* Dell Green */
+  --error: #D32F2F;             /* Error Red */
+  --border: #E0E0E0;
+  --text-secondary: #5A5A5A;    /* Dell Gray */
+  --shimmer-base: #a3a3a3;
+  --shimmer-peak: #ffffff;
+  --placeholder-opacity-min: .6;
+  --hover-bg: #F0F7FF;          /* Light Dell Blue tint */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dell Brand Colors - Dark Mode */
+    --background: #1A1A1A;      /* Dell Dark Gray */
+    --foreground: #F5F5F5;
+    --primary: #0076CE;         /* Dell Blue */
+    --primary-dark: #005A9E;    /* Dell Blue Dark */
+    --primary-light: #4DA6FF;   /* Dell Blue Light */
+    --secondary: #2A2A2A;       /* Darker Gray */
+    --accent: #FF8300;          /* Dell Orange */
+    --success: #00A982;         /* Dell Green */
+    --error: #EF5350;           /* Lighter Error Red */
+    --border: #404040;
+    --text-secondary: #B0B0B0;  /* Light Gray for dark mode */
+    --shimmer-base: #444;
+    --shimmer-peak: #222;
+    --placeholder-opacity-min: .4;
+    --hover-bg: #2A3F5F;        /* Dark Dell Blue tint */
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Dell Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Custom scrollbar - Dell themed */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Dell brand utilities */
+.dell-primary {
+  color: var(--primary);
+}
+
+.dell-bg-primary {
+  background-color: var(--primary);
+}
+
+.dell-border-primary {
+  border-color: var(--primary);
+}
+
+.dell-hover-primary:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary);
+}

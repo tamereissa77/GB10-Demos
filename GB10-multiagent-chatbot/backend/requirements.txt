@@ -1,0 +1,36 @@
+# MCP Servers Dependencies for GB10
+# Install with: pip install -r requirements.txt
+
+# Core MCP & LLM packages
+pydantic>=2.0
+mcp>=0.1.0
+# Adapter for integrating LangChain tools with MCP servers
+langchain-mcp-adapters>=0.1.0
+pydantic>=2.0
+langchain>=1.0
+langchain_core>=1.0
+langchain_community>=0.0.1
+
+# Database & Vector Search
+pymilvus>=2.3
+pymongo>=4.0
+
+# Data & Document Processing
+pillow>=9.0
+requests>=2.28
+python-dotenv>=0.19
+
+# LLM Framework
+openai>=1.0
+anthropic>=0.7
+
+# Utilities
+numpy>=1.21
+pandas>=1.3
+typing-extensions>=4.0
+
+# JSON-RPC & Protocol
+jsonrpc>=1.2
+
+# Additional common ML deps
+scikit-learn>=1.0

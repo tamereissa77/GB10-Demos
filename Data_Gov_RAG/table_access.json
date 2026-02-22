@@ -1,0 +1,11 @@
+{
+    "employee_salaries": {
+        "allowed_roles": [
+            "hr",
+            "admin"
+        ],
+        "description": "Employee compensation, bonuses, and benefits packages",
+        "classification": "Confidential",
+        "owner": "HR Department"
+    }
+}

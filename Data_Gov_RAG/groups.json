@@ -1,0 +1,17 @@
+{
+  "HR Team": [
+    "hr",
+    "admin"
+  ],
+  "Finance Team": [
+    "finance"
+  ],
+  "General Staff": [
+    "intern"
+  ],
+  "Executive": [
+    "hr",
+    "finance",
+    "admin"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "sources": [
+    "ACUD-Data-platfrom-technicalproposal.pdf",
+    "AI_Business_Unit_Director_Job_Description.docx",
+    "Referances list for NBE Big data RFP response.pdf"
+  ],
+  "models": [
+    "gpt-oss-120b",
+    "qwen3-30b-moe"
+  ],
+  "selected_model": "qwen3-30b-moe",
+  "selected_sources": [],
+  "current_chat_id": "844d6da8-c06b-4ec9-87e3-3fa26dd016bd"
+}

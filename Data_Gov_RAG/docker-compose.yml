@@ -1,0 +1,50 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: llama
+    ports:
+      - "30000:11434"
+    volumes:
+      - .ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: gov-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=govdemo
+      - POSTGRES_PASSWORD=govdemo123
+      - POSTGRES_DB=governance
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  data-gov-rag:
+    build: .
+    container_name: data-gov-rag
+    ports:
+      - "8501:8501"
+    environment:
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - OPENAI_API_BASE=http://llama:11434/v1
+      - OPENAI_API_KEY=lm-studio
+      - DATABASE_URL=postgresql://govdemo:govdemo123@postgres:5432/governance
+    volumes:
+      - .:/app
+    depends_on:
+      - ollama
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  pgdata:

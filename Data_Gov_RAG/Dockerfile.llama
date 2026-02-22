@@ -1,0 +1,38 @@
+# Build llama.cpp with CUDA support for GB10 (sm_121)
+FROM nvidia/cuda:12.8.0-devel-ubuntu24.04 AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git cmake build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY llama.cpp /llama.cpp
+
+WORKDIR /llama.cpp
+
+RUN mkdir build && cd build && \
+    ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs \
+    cmake .. -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="90" -DLLAMA_CURL=OFF && \
+    make -j4 llama-server llama-cli
+
+# Runtime stage
+FROM nvidia/cuda:12.8.0-runtime-ubuntu24.04
+
+COPY --from=builder /llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+COPY --from=builder /llama.cpp/build/bin/llama-cli /usr/local/bin/llama-cli
+COPY --from=builder /llama.cpp/build/src/*.so /usr/local/lib/
+COPY --from=builder /llama.cpp/build/ggml/src/*.so /usr/local/lib/
+COPY --from=builder /llama.cpp/build/ggml/src/ggml-cuda/*.so /usr/local/lib/
+
+RUN ldconfig
+
+EXPOSE 30000
+
+ENTRYPOINT ["/usr/local/bin/llama-server"]
+
+CMD ["--model", "/models/deepseek-coder-6.7b-instruct.Q8_0.gguf", \
+     "--host", "0.0.0.0", \
+     "--port", "30000", \
+     "--n-gpu-layers", "99", \
+     "--ctx-size", "8192", \
+     "--threads", "8"]

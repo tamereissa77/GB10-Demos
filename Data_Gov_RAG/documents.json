@@ -1,0 +1,37 @@
+[
+  {
+    "text": "The CEO salary is $500,000 per year. The CFO salary is $450,000 per year. Bonus structure is based on company performance metrics.\nMohamed Salary is $150,000\nAhmed Salary is $100,000",
+    "source": "Payroll.pdf",
+    "allowed_roles": [
+      "hr",
+      "admin"
+    ],
+    "description": "Employee compensation and salary records",
+    "classification": "Confidential",
+    "owner": "HR Department"
+  },
+  {
+    "text": "Project X is over budget by $2M and is failing. Q3 revenue projections show a 15% decline. Cost reduction measures are being evaluated.",
+    "source": "Finance_Report.pdf",
+    "allowed_roles": [
+      "finance",
+      "admin"
+    ],
+    "description": "Quarterly financial reports and budget analysis",
+    "classification": "Internal",
+    "owner": "Finance Department"
+  },
+  {
+    "text": "The office holiday party is on Friday at 5 PM in the main lobby. All employees are welcome. Dress code is business casual.",
+    "source": "General_Announce.pdf",
+    "allowed_roles": [
+      "intern",
+      "hr",
+      "finance",
+      "admin"
+    ],
+    "description": "Company-wide announcements and events",
+    "classification": "Public",
+    "owner": "Corporate Communications"
+  }
+]

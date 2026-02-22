@@ -1,0 +1,35 @@
+# Caches and Models
+hf_cache/
+.cache/
+nim_cache/
+arangodb_data/
+arangodb_apps_data/
+qdrant_data/
+ollama_data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node.js
+node_modules/
+dist/
+dist-ssr
+*.local
+.next/
+out/
+
+# OS/IDEs
+.DS_Store
+.vscode/
+.idea/
+
+# Temp/Test files
+temp_txt2kg_repo/
+multipage_test.pdf
+test.png
+test.txt
+*.log

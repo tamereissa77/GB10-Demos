@@ -1,0 +1,205 @@
+
+
+services:
+  backend:
+    profiles:
+      - ingestion
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - TRIPLE_EXTRACT_TIMEOUT_SECONDS=${TRIPLE_EXTRACT_TIMEOUT_SECONDS:-300}
+      - TRIPLE_EXTRACT_CONNECT_TIMEOUT_SECONDS=${TRIPLE_EXTRACT_CONNECT_TIMEOUT_SECONDS:-30}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - HF_TOKEN=${HF_TOKEN}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - ./backend:/app
+      - ./hf_cache:/root/.cache/huggingface
+    shm_size: '8gb'
+    ipc: host
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  extractionview:
+    build:
+      context: ./frontend
+      args:
+        VITE_APP_MODE: extraction
+        NGINX_CONF: nginx.conf
+    ports:
+      - "5173:80"
+    profiles:
+      - ingestion
+
+  chatview:
+    build:
+      context: ./frontend
+      args:
+        VITE_APP_MODE: chat
+        NGINX_CONF: nginx-chat.conf
+    ports:
+      - "5174:80"
+    profiles:
+      - retrieval
+    depends_on:
+      txt2kg-app:
+        condition: service_started
+
+  # txt2kg services
+  txt2kg-app:
+    profiles:
+      - ingestion
+      - retrieval
+    build:
+      context: ./txt2kg_integration
+      dockerfile: deploy/app/Dockerfile
+    ports:
+      - '3001:3000'
+    environment:
+      - ARANGODB_URL=http://arangodb:8529
+      - ARANGODB_DB=txt2kg
+      - GRAPH_DB_TYPE=arangodb
+      - NEO4J_URI=bolt://localhost:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=password123
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+      - OLLAMA_MODEL=llama3.1:8b
+      - VLLM_BASE_URL=http://localhost:8001/v1
+      - VLLM_MODEL=disabled
+      - QDRANT_URL=http://qdrant:6333
+      - VECTOR_DB_TYPE=qdrant
+      - LANGCHAIN_TRACING_V2=true
+      - SENTENCE_TRANSFORMER_URL=http://sentence-transformers:80
+      - MODEL_NAME=all-MiniLM-L6-v2
+      - EMBEDDINGS_API_URL=http://sentence-transformers:80
+      - GRPC_SSL_CIPHER_SUITES=HIGH+ECDSA:HIGH+aRSA
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-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}
+      - NIM_LLM_URL=http://nim-llm:8000/v1
+      - NIM_LLM_MODEL=meta/llama-3.1-8b-instruct
+      - NODE_OPTIONS=--max-http-header-size=80000
+      - UV_THREADPOOL_SIZE=128
+      - HTTP_TIMEOUT=1800000
+      - REQUEST_TIMEOUT=1800000
+    depends_on:
+      arangodb:
+        condition: service_started
+      qdrant:
+        condition: service_started
+
+  arangodb:
+    image: arangodb:latest
+    ports:
+      - '8529:8529'
+    environment:
+      - ARANGO_NO_AUTH=1
+    volumes:
+      - arangodb_data:/var/lib/arangodb3
+      - arangodb_apps_data:/var/lib/arangodb3-apps
+    restart: unless-stopped
+
+  arangodb-init:
+    image: arangodb:latest
+    profiles:
+      - ingestion
+    depends_on:
+      arangodb:
+        condition: service_started
+    restart: on-failure
+    entrypoint: >
+      sh -c "
+        echo 'Waiting for ArangoDB to start...' &&
+        sleep 10 &&
+        echo 'Creating txt2kg database...' &&
+        arangosh --server.endpoint tcp://arangodb:8529 --server.authentication false --javascript.execute-string 'try { db._createDatabase(\"txt2kg\"); console.log(\"Database txt2kg created successfully!\"); } catch(e) { if(e.message.includes(\"duplicate\")) { console.log(\"Database txt2kg already exists\"); } else { throw e; } }'
+      "
+
+  ollama:
+    profiles:
+      - ingestion
+    build:
+      context: ./txt2kg_integration/deploy/services/ollama
+      dockerfile: Dockerfile
+    image: ollama-custom:latest
+    container_name: ollama-compose
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - CUDA_VISIBLE_DEVICES=0
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KEEP_ALIVE=30m
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_KV_CACHE_TYPE=q8_0
+      - OLLAMA_GPU_LAYERS=-1
+      - OLLAMA_LLM_LIBRARY=cuda_v13
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - '6333:6333'
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  nim-llm:
+    profiles:
+      - retrieval
+    image: nvcr.io/nim/meta/llama-3.1-8b-instruct-dgx-spark:1.0.0-variant
+    ports:
+      - '8010:8000'
+    environment:
+      - NGC_API_KEY=${NGC_API_KEY:-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}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NIM_VLLM_ARGS=--enforce-eager --gpu-memory-utilization 0.5
+      - NIM_ENFORCE_EAGER=1
+    ipc: host
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    volumes:
+      - ${HOME}/.cache/nim:/opt/nim/.cache
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  arangodb_data:
+  arangodb_apps_data:
+  ollama_data:
+  qdrant_data:

@@ -1,0 +1,42 @@
+# ── Secrets ──────────────────────────────────────
+.env
+*.env
+
+# ── Python ───────────────────────────────────────
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# ── Large binary / model files ───────────────────
+models/
+*.gguf
+*.bin
+*.safetensors
+hf_cache/
+.ollama/
+
+# ── Build artifacts & compiled code ──────────────
+llama.cpp/
+build/
+dist/
+node_modules/
+
+# ── Docker runtime data ─────────────────────────
+volumes/
+
+# ── Temp / logs ──────────────────────────────────
+*.log
+build_log*.txt
+temp_*/
+uploads/
+
+# ── OS ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ──────────────────────────────────────────
+.vscode/
+.idea/
+.gemini/
