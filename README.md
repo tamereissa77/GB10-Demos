@@ -43,4 +43,5 @@ make run
 ## 👤 Author
 
 **Tamer AbdelFattah**  
-AI Solutions Engineer — Dell Technologies
+NVIDIA AI Solutions Business Development Executive @ Dell Technologies  
+📧 [tamer.abdelfattah@dell.com](mailto:tamer.abdelfattah@dell.com)
