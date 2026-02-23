@@ -9,7 +9,7 @@ Ready-to-run AI demo applications created by **Tamer AbdelFattah**, designed to 
 | Demo | Description | Stack |
 |------|-------------|-------|
 | **[Data_Gov_RAG](Data_Gov_RAG/)** | Hybrid RAG with data governance — role-based access control over documents (ChromaDB) and database tables (PostgreSQL), with full governance logging | Streamlit, Ollama, ChromaDB, PostgreSQL, NVIDIA Embeddings |
-| **[EXTRACT-elements](EXTRACT-elements/)** | Document extraction and knowledge graph pipeline — extract structured elements from Arabic and English documents | Streamlit, Ollama, ArangoDB, PostgreSQL |
+| **[EXTRACT-elements](https://github.com/tamereissa77/EXTRACT-elements)** | Document extraction and knowledge graph pipeline — extract structured elements from Arabic and English documents *(Moved to own repository)* | Streamlit, Ollama, ArangoDB, PostgreSQL |
 | **[GB10-multiagent-chatbot](GB10-multiagent-chatbot/)** | Multi-agent chatbot system with tool-calling capabilities and multiple LLM model support | Streamlit, Ollama, LangChain |
 | **[VLM](VLM/)** | Vision Language Model demos — visual question answering and image understanding | Ollama, Gradio |
 | **[VSS](VSS/)** | Video Search & Surveillance — real-time video analytics with object detection and event recognition | NVIDIA DeepStream, Triton, Gradio |
