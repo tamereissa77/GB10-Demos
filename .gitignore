@@ -40,3 +40,6 @@ Thumbs.db
 .vscode/
 .idea/
 .gemini/
+
+# ── Excluded Sub-projects ────────────────────────
+EXTRACT-elements/
